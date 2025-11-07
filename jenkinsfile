@@ -1,7 +1,8 @@
 pipeline{
     agent any
     tools{
-        nodejs 'node16'
+        jdk 'jdk17'
+        nodejs 'node23'
     }
     environment {
         SCANNER_HOME=tool 'sonar-scanner'
@@ -14,7 +15,7 @@ pipeline{
         }
         stage('Checkout from Git'){
             steps{
-                git 'https://github.com/Sourav16031998/DevOps-Project-Swiggy.git'
+                git 'https://github.com/Tejas-kandregula/DevOps-Project-Swiggy'
             }
         }
         stage("Sonarqube Analysis "){
@@ -51,7 +52,7 @@ pipeline{
         stage("Docker Build & Push"){
             steps{
                 script{
-                   withDockerRegistry(credentialsId: 'docker', toolName: 'docker'){   
+                   withDockerRegistry(credentialsId: 'docker-creds', toolName: 'docker'){   
                        sh "docker build -t swiggy ."
                        sh "docker tag swiggy sourav16031998/swiggy:latest "
                        sh "docker push sourav16031998/swiggy:latest "
@@ -61,7 +62,7 @@ pipeline{
         }
         stage("TRIVY"){
             steps{
-                sh "trivy image kastrov/swiggy:latest > trivy.txt" 
+                sh "trivy image sourav16031998/swiggy:latest > trivy.txt" 
             }
         }
         stage('Deploy to container'){
